@@ -9,7 +9,7 @@ import (
 
 var Gorm *gorm.DB
 
-func init() {
+func initDB() {
 	Gorm = gormDB()
 }
 
