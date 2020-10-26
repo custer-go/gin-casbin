@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/casbin/casbin/v2"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,18 +19,25 @@ func CheckLogin() gin.HandlerFunc {
 	}
 }
 
+// 把 p.csv 持久化到数据库中
 func RBAC() gin.HandlerFunc {
-	e, err := casbin.NewEnforcer("resources/model.conf", "resources/p.csv")
+	adap, err := gormadapter.NewAdapterByDB(Gorm) // 数据库中没有就会创建表 casbin_rules
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
+	e, err := casbin.NewEnforcer("resources/model.conf", adap)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = e.LoadPolicy()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return func(c *gin.Context) {
 		user, _ := c.Get("user_name")
-		ok, err := e.Enforce(user, c.Request.RequestURI, c.Request.Method)
-		if err != nil {
-			log.Panic(err)
-		}
-		if !ok {
+		access, err := e.Enforce(user, c.Request.RequestURI, c.Request.Method)
+		if err != nil || !access {
 			c.AbortWithStatusJSON(403, gin.H{"message": "forbidden"})
 		} else {
 			c.Next()
