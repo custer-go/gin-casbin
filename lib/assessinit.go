@@ -33,6 +33,8 @@ func initPolicy() {
 	// E.AddPolicy("member", "/depts", "GET")
 	// E.AddPolicy("admin", "/depts", "POST")
 	// E.AddRoleForUser("zhangsan", "member")
+	return
+	// 初始化角色
 	m := make([]*RoleRel, 0)
 	GetRoles(0, &m, "")
 	for _, r := range m {
