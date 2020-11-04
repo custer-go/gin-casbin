@@ -2,6 +2,7 @@ package lib
 
 import (
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func CheckLogin() gin.HandlerFunc {
@@ -18,7 +19,10 @@ func CheckLogin() gin.HandlerFunc {
 func RBAC() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, _ := c.Get("user_name")
-		access, err := E.Enforce(user, c.Request.RequestURI, c.Request.Method)
+		//access, err := E.Enforce(user, c.Request.RequestURI, c.Request.Method)
+		domain := c.Param("domain")
+		uri := strings.TrimPrefix(c.Request.RequestURI, "/"+domain) // /domain/depts => /depts
+		access, err := E.Enforce(user, domain, uri, c.Request.Method)
 		if err != nil || !access {
 			c.AbortWithStatusJSON(403, gin.H{"message": "forbidden"})
 		} else {
