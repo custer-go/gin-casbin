@@ -8,6 +8,7 @@ type Routers struct {
 	RouterUri    string `gorm:"column:r_uri"`
 	RouterMethod string `gorm:"column:r_method"`
 	RoleName     string
+	Domain       string `gorm:"column:tenant_name"`
 }
 
 func (this *Routers) TableName() string {

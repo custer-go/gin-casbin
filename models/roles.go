@@ -7,6 +7,8 @@ type Role struct {
 	RoleName    string `gorm:"column:role_name"`
 	RolePid     int    `gorm:"column:role_pid"`
 	RoleComment string `gorm:"column:role_comment"`
+	TenantId    string `gorm:"column:tenant_id"`
+	TenantName  string `gorm:"column:tenant_name"`
 }
 
 func (this *Role) TableName() string {
@@ -14,5 +16,5 @@ func (this *Role) TableName() string {
 }
 
 func (this *Role) String() string {
-	return fmt.Sprintf("ID:%d 角色名:%s", this.RoleId, this.RoleName)
+	return fmt.Sprintf("ID:%d 角色名:%s - 租户名:%s", this.RoleId, this.RoleName, this.TenantName)
 }
