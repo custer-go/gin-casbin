@@ -1,23 +1,18 @@
 package main
 
 import (
-	"gin-casbin/lib"
-
-	"github.com/gin-gonic/gin"
+	"github.com/casbin/casbin/v2"
+	"log"
 )
 
 func main() {
-	r := gin.New()
-	r.Use(lib.Middlewares()...)
+	sub:= "lisi" // 想要访问资源的用户。
+	obj:= "/depts" // 将被访问的资源。
+	act:= "POST" // 用户对资源执行的操作。
+	e,_:= casbin.NewEnforcer("resources/model_t.conf","resources/p_t.csv")
 
-	r.GET("/depts", func(c *gin.Context) {
-		c.JSON(200, gin.H{"result": "部门列表"})
-	})
-	r.GET("/depts/:id", func(c *gin.Context) {
-		c.JSON(200, gin.H{"result": "部门详细"})
-	})
-	r.POST("/depts", func(c *gin.Context) {
-		c.JSON(200, gin.H{"reult": "批量修改部门列表"})
-	})
-	r.Run(":8080")
+	ok,err:= e.Enforce(sub,"domain2", obj, act)
+	if err==nil && ok {
+		log.Println("运行通过")
+	}
 }
